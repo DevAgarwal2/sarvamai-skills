@@ -1,0 +1,287 @@
+---
+name: sarvam-ai-skills
+description: Guide for building AI applications with Sarvam AI APIs for Indian languages. Use when working with speech-to-text transcription, text-to-speech synthesis, text translation, chat completion, or document intelligence. Covers models saarika:v2.5, saaras:v2.5/v3, bulbul:v2/v3-beta, mayura:v1, sarvam-translate:v1, sarvam-m, and sarvam-vision for 11-23 Indian languages. Trigger when user asks about Indian language AI, STT, TTS, translation, multilingual chatbots, voice assistants, or document processing.
+license: MIT
+---
+
+# Sarvam AI Skills
+
+Build AI applications with Sarvam AI APIs for Indian languages.
+
+## Overview
+
+Sarvam AI provides specialized models for Indian language processing:
+
+- **Speech-to-Text (saarika:v2.5, saaras:v3)** - Transcribe audio in 11 languages (saaras:v3 has 5 modes)
+- **Speech-to-Text-Translate (saaras:v2.5)** - Transcribe and auto-translate to English
+- **Text-to-Speech (bulbul:v2, bulbul:v3-beta)** - Natural speech with 7-31 voice options
+- **Text Translation (mayura:v1, sarvam-translate:v1)** - Translate between 11-22 Indian languages
+- **Chat Completion (sarvam-m)** - 24B parameter multilingual model
+- **Document Intelligence (sarvam-vision)** - 3B parameter VLM for document processing in 23 languages
+
+## Anatomy of a Skill
+
+Every skill consists of a required SKILL.md file and optional bundled resources:
+
+```
+sarvam-ai-skills/
+├── SKILL.md (required)
+│   ├── YAML frontmatter metadata (required)
+│   │   ├── name: sarvam-ai-skills
+│   │   └── description: Guide for building AI applications...
+│   └── Markdown instructions (required)
+│       ├── API Overview
+│       ├── Setup instructions
+│       ├── Quick Start examples
+│       └── Best practices
+│
+└── Bundled Resources (optional)
+    ├── examples/          - Working Python code (STT, TTS, Translation, Chat)
+    ├── templates/         - Documentation guides for skill creation
+    └── assets/            - Configuration files (.env, requirements.txt)
+```
+
+### SKILL.md (required)
+
+The entrypoint file containing:
+
+**Frontmatter (YAML):**
+- `name` - Skill identifier
+- `description` - When to use this skill
+- `license` - MIT license
+
+**Body (Markdown):**
+- API overview and endpoints
+- Setup instructions
+- Quick start code examples
+- Best practices and patterns
+
+### Bundled Resources (optional)
+
+**examples/** - Executable Python scripts demonstrating each API:
+- `speech_to_text.py` - Transcription examples
+- `text_to_speech.py` - Speech generation examples
+- `text_translation.py` - Translation examples
+- `chat_completion.py` - Conversational AI examples
+- `end_to_end_example.py` - Multi-API workflow examples
+
+**templates/** - Reference documentation for skill creation:
+- `speech-to-text-template.md` - Complete STT guide
+- `text-to-speech-template.md` - Complete TTS guide
+- `text-translation-template.md` - Complete translation guide
+- `chat-completion-template.md` - Complete chat guide
+- `skill-template.md` - General skill framework
+
+**assets/** - Configuration and dependencies:
+- `.env` - API key storage
+- `.env.example` - Environment template
+- `requirements.txt` - Python dependencies
+
+## Setup
+
+```bash
+pip install sarvamai
+export SARVAM_API_KEY="your_key"
+```
+
+```python
+from sarvamai import SarvamAI
+import os
+client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
+```
+
+## Quick Start
+
+### Speech to Text
+```python
+# File: examples/speech_to_text.py
+with open("audio.wav", "rb") as f:
+    response = client.speech_to_text.transcribe(
+        file=f, model="saarika:v2.5", language_code="hi-IN"
+    )
+print(response.transcript)
+```
+
+### Speech to Text Translate
+```python
+# File: examples/speech_to_text_translate.py
+with open("audio.wav", "rb") as f:
+    response = client.speech_to_text.translate(file=f, model="saaras:v2.5")
+print(response.translation)  # English output
+```
+
+### Text to Speech
+```python
+# File: examples/text_to_speech.py
+# bulbul:v2 (default) - 7 speakers: Anushka, Manisha, Vidya, Arya, Abhilash, Karun, Hitesh
+response = client.text_to_speech.convert(
+    text="नमस्ते", target_language_code="hi-IN", 
+    model="bulbul:v2", speaker="anushka"
+)
+# Decode: base64.b64decode(response.audios[0])
+```
+
+### Text Translation
+```python
+# File: examples/text_translation.py
+response = client.text.translate(
+    input="Hello", source_language_code="en-IN", target_language_code="hi-IN"
+)
+print(response.translated_text)
+```
+
+### Chat Completion
+```python
+# File: examples/chat_completion.py
+response = client.chat.completions(
+    messages=[{"role": "user", "content": "What is AI?"}],
+    model="sarvam-m", temperature=0.7
+)
+print(response.choices[0].message.content)
+```
+
+### Document Intelligence
+```python
+# File: examples/document_intelligence.py
+# Process documents in 23 languages (22 Indian + English)
+# Supports PDF, ZIP; outputs HTML, Markdown, or JSON (as ZIP)
+import requests
+import zipfile
+
+# Step 1: Create job
+response = requests.post(
+    "https://api.sarvam.ai/doc-digitization/job/v1",
+    headers={"api-subscription-key": api_key},
+    json={"job_parameters": {"language": "hi-IN", "output_format": "md"}}
+)
+job_id = response.json()["job_id"]
+
+# Step 2: Get upload URL
+upload_resp = requests.post(
+    f"https://api.sarvam.ai/doc-digitization/job/v1/upload-files",
+    headers={"api-subscription-key": api_key},
+    json={"job_id": job_id, "files": ["document.pdf"]}
+)
+upload_url = upload_resp.json()["upload_urls"]["document.pdf"]["file_url"]
+
+# Step 3: Upload file
+with open("document.pdf", "rb") as f:
+    requests.put(upload_url, data=f, headers={"x-ms-blob-type": "BlockBlob"})
+
+# Step 4: Start processing
+requests.post(f"https://api.sarvam.ai/doc-digitization/job/v1/{job_id}/start",
+              headers={"api-subscription-key": api_key})
+
+# Step 5: Poll for completion and download (see full example)
+```
+
+## Supported Languages
+
+**Core 11 languages** (all models): hi-IN, en-IN, bn-IN, gu-IN, kn-IN, ml-IN, mr-IN, od-IN, pa-IN, ta-IN, te-IN
+
+**Extended 22 languages** (sarvam-translate:v1): + as-IN, brx-IN, doi-IN, kok-IN, ks-IN, mai-IN, mni-IN, ne-IN, sa-IN, sat-IN, sd-IN, ur-IN
+
+**Document Intelligence 23 languages** (sarvam-vision): All 22 Indian languages + en-IN
+
+## Repository Structure
+
+```
+sarvam-skills/
+├── SKILL.md                          # This file - Skill definition
+├── FILE_STRUCTURE.md                 # Detailed file tree
+├── README.md                         # Main documentation
+├── CONTRIBUTING.md                   # Contribution guidelines
+├── requirements.txt                  # Python dependencies
+├── .env                             # Your API key (configured)
+├── .env.example                     # Environment template
+│
+├── examples/                        # Working code examples
+│   ├── speech_to_text.py            # STT: Transcribe audio (saarika:v2.5, saaras:v3)
+│   ├── speech_to_text_translate.py  # STT-Translate: Audio → English (saaras:v2.5)
+│   ├── text_to_speech.py            # TTS: Text → Audio (bulbul:v2, v3-beta)
+│   ├── text_translation.py          # Translation: 11-22 languages
+│   ├── chat_completion.py           # Chat: sarvam-m model
+│   ├── document_intelligence.py     # Document: Process docs in 23 languages
+│   ├── end_to_end_example.py        # Multi-API workflows
+│   └── README.md                    # Examples documentation
+│
+└── templates/                       # Skill creation guides
+    ├── API_VERSIONS.md              # ✅ Cross-verified API endpoints (Feb 2026)
+    ├── speech-to-text-template.md   # STT skill creation
+    ├── text-to-speech-template.md   # TTS skill creation
+    ├── text-translation-template.md # Translation skills
+    ├── chat-completion-template.md  # Chat AI skills
+    ├── document-intelligence-template.md  # Document processing skills
+    ├── skill-template.md            # General skill template
+    └── README.md                    # Templates overview
+```
+
+**Key locations:**
+- `examples/` - 6 working Python scripts demonstrating each API
+- `templates/` - 6 comprehensive guides (including API_VERSIONS.md)
+- `templates/API_VERSIONS.md` - Cross-verified API endpoints and versions
+- `.env` - Your API key (already configured)
+- `requirements.txt` - Python dependencies
+
+## Common Workflows
+
+### Multilingual Chatbot (STT → Translate → Chat → Translate → TTS)
+See: `examples/end_to_end_example.py` (lines 87-130)
+
+### Content Localization (Multi-language + Audio)
+See: `examples/text_translation.py` (Example 2, lines 60-90)
+
+### Voice Assistant (Voice → Text → AI → Voice)
+See: `examples/end_to_end_example.py` (lines 133-180)
+
+## Model Selection
+
+**Speech-to-Text:** saarika:v2.5 (standard), saaras:v3 (5 modes: transcribe, translate, verbatim, translit, codemix)  
+**Text-to-Speech:** bulbul:v2 (default, 7 speakers), bulbul:v3-beta (31 speakers, temperature control)  
+**Translation:** mayura:v1 (11 languages), sarvam-translate:v1 (22 languages)  
+**Chat:** sarvam-m only (24B parameters)
+**Document Intelligence:** sarvam-vision (3B VLM, 23 languages, PDF/PNG/JPG input)
+
+## Best Practices
+
+**API Key:** Use environment variables (`os.getenv("SARVAM_API_KEY")`)  
+**Error Handling:** Wrap API calls in try-except  
+**Audio:** Use WAV format, keep under 25MB  
+**Translation:** Use auto-detection when source unknown  
+**Performance:** Cache translations, batch requests
+
+## Bundled Resources
+
+### Examples (`examples/`)
+Working Python scripts for each API endpoint:
+- `speech_to_text.py` - Audio transcription
+- `speech_to_text_translate.py` - Transcribe + translate
+- `text_to_speech.py` - Speech generation
+- `text_translation.py` - Text translation
+- `chat_completion.py` - Conversational AI
+- `document_intelligence.py` - Document processing (PDFs, images)
+- `end_to_end_example.py` - Multi-API workflows
+
+See [examples/README.md](examples/README.md) for detailed documentation.
+
+### Templates (`templates/`)
+Comprehensive guides for building skills:
+- `API_VERSIONS.md` - ✅ Cross-verified API endpoints (Feb 2026)
+- `speech-to-text-template.md` - STT skill creation
+- `text-to-speech-template.md` - TTS skill creation
+- `text-translation-template.md` - Translation skills
+- `chat-completion-template.md` - Chat AI skills
+- `document-intelligence-template.md` - Document processing skills
+- `skill-template.md` - General skill template
+
+See [templates/README.md](templates/README.md) and [templates/API_VERSIONS.md](templates/API_VERSIONS.md) for details.
+
+### Structure Reference
+See [FILE_STRUCTURE.md](FILE_STRUCTURE.md) for complete file tree with sizes and use cases.
+
+## Resources
+
+- Docs: https://docs.sarvam.ai
+- Dashboard: https://dashboard.sarvam.ai
+- Discord: https://discord.com/invite/5rAsykttcs
+- Python SDK: https://pypi.org/project/sarvamai/
