@@ -7,13 +7,14 @@ to extract text from PDFs and images in 23 languages (22 Indian + English).
 Model: sarvam-vision (3B parameter Vision Language Model)
 
 Supported Input Formats: PDF, ZIP (containing JPG/PNG images)
-Output Formats (delivered as ZIP): html, md, json
+Output Formats (delivered as ZIP): html, md (json is NOT supported)
 
 Supported languages (23): hi-IN, en-IN, bn-IN, gu-IN, kn-IN, ml-IN, mr-IN, od-IN, pa-IN, ta-IN, te-IN,
                           as-IN, ur-IN, sa-IN, ne-IN, doi-IN, brx-IN, kok-IN, mai-IN, sd-IN, ks-IN, mni-IN, sat-IN
 """
 
 import os
+import zipfile
 from sarvamai import SarvamAI
 from dotenv import load_dotenv
 
@@ -28,7 +29,7 @@ def process_document(file_path: str, language: str = "en-IN", output_format: str
     Args:
         file_path: Path to PDF or ZIP file
         language: Language code (default: en-IN)
-        output_format: Output format - "html", "md", or "json" (default: md)
+        output_format: Output format - "html" or "md" only (default: md)
     
     Returns:
         dict: Processing results including output file path
@@ -54,7 +55,7 @@ def process_document(file_path: str, language: str = "en-IN", output_format: str
     job.start()
     print("  ✓ Job started")
     
-    # Step 4: Wait for completion
+    # Step 4: Wait for completion (with timeout)
     print("Waiting for completion...")
     status = job.wait_until_complete()
     print(f"  ✓ Job completed with state: {status.job_state}")
@@ -69,9 +70,18 @@ def process_document(file_path: str, language: str = "en-IN", output_format: str
     job.download_output(output_file)
     print(f"  ✓ Output saved to {output_file}")
     
+    # Step 7: Auto-extract ZIP file
+    extract_dir = f"{os.path.splitext(file_path)[0]}_extracted"
+    print(f"Extracting to {extract_dir}/...")
+    os.makedirs(extract_dir, exist_ok=True)
+    with zipfile.ZipFile(output_file, 'r') as zip_ref:
+        zip_ref.extractall(extract_dir)
+    print(f"  ✓ Extracted to {extract_dir}/")
+    
     return {
         "job_id": job.job_id,
         "output_file": output_file,
+        "extracted_dir": extract_dir,
         "status": status.job_state,
         "metrics": metrics
     }
@@ -97,7 +107,8 @@ def main():
         )
         print(f"\n✓ Processing complete!")
         print(f"  Job ID: {result['job_id']}")
-        print(f"  Output: {result['output_file']}")
+        print(f"  Output ZIP: {result['output_file']}")
+        print(f"  Extracted to: {result['extracted_dir']}")
     except FileNotFoundError:
         print("  (Skipped - file not found)")
     except Exception as e:
@@ -108,12 +119,15 @@ def main():
     print("Example 2: HTML Output Format")
     print("=" * 60)
     print("Use HTML for complex tables and structured documents")
+    print("\nExample:")
+    print("  result = process_document('document.pdf', 'en-IN', 'html')")
     
-    # Example 3: Process with JSON output
+    # Example 3: Supported formats
     print("\n" + "=" * 60)
-    print("Example 3: JSON Output Format")
+    print("Example 3: Supported Output Formats")
     print("=" * 60)
-    print("Use JSON for programmatic processing and data extraction")
+    print("✅ Supported: 'html', 'md'")
+    print("❌ NOT supported: 'json' (will cause API error)")
     
     # Example 4: Supported languages
     print("\n" + "=" * 60)
@@ -142,7 +156,7 @@ def main():
         ("Legal Documents", "md", "Preserves structure and reading order"),
         ("Academic Papers", "md", "Multi-column layouts, references"),
         ("Government Records", "html", "Forms and structured data"),
-        ("Invoice Processing", "json", "Programmatic data extraction"),
+        ("Invoice Processing", "html", "Extract structured table data"),
     ]
     
     print("\nRecommended formats:")
