@@ -37,7 +37,7 @@
 | bulbul | v3-beta | ✅ Active | No | 2500 |
 
 **bulbul:v2 Speakers (7 total):**
-- Female: Anushka (default), Manisha, Vidya, Arya
+- Female: anushka (default), manisha, vidya, arya
 - Male: Abhilash, Karun, Hitesh
 
 **bulbul:v3-beta Speakers (31 total):**
@@ -119,7 +119,7 @@ Assamese (as-IN), Bodo (brx-IN), Dogri (doi-IN), Konkani (kok-IN), Kashmiri (ks-
 
 1. **Text-to-Speech Speakers**
    - Listed: meera, amol, arvind
-   - **Reality:** Anushka, Abhilash, Karun, Manisha, Vidya, Arya, Hitesh (v2) or 31 speakers (v3-beta)
+   - **Reality:** anushka, abhilash, karun, manisha, vidya, arya, hitesh (v2) or 31 speakers (v3-beta)
 
 2. **Chat Models**
    - Listed: sarvam-2b, sarvam-m, sarvam-1

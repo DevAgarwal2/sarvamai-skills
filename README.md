@@ -90,7 +90,7 @@ Convert audio to text in Indian languages.
 ```python
 response = client.speech_to_text.transcribe(
     file=open("audio.wav", "rb"),
-    model="saarika:v2.5",
+    
     language_code="hi-IN"
 )
 ```
@@ -105,7 +105,7 @@ Transcribe and translate audio to English.
 ```python
 response = client.speech_to_text.translate(
     file=open("audio.wav", "rb"),
-    model="saaras:v2.5"
+    
 )
 ```
 
@@ -242,7 +242,7 @@ audio = client.text_to_speech.convert(
 # 2. Transcribe to text
 transcript = client.speech_to_text.transcribe(
     file=audio_file,
-    model="saarika:v2.5",
+    
     language_code="hi-IN"
 )
 

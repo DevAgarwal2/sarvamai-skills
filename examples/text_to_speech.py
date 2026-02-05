@@ -8,7 +8,7 @@ Available Models:
 - bulbul:v2 (default) - 7 speakers, supports pitch/loudness/pace
 - bulbul:v3-beta (new) - 31 speakers, supports temperature
 
-bulbul:v2 Speakers (7): Anushka, Manisha, Vidya, Arya, Abhilash, Karun, Hitesh
+bulbul:v2 Speakers (7): anushka, manisha, vidya, arya, abhilash, karun, hitesh
 bulbul:v3-beta Speakers (31): Aditya (default), Ritu, Priya, Rohan, and 27 more
 
 Supported languages: hi-IN, bn-IN, kn-IN, ml-IN, mr-IN, or-IN, pa-IN, ta-IN, te-IN, gu-IN, en-IN
@@ -21,7 +21,7 @@ from sarvamai import SarvamAI
 def text_to_speech(
     text: str,
     target_language_code: str = "hi-IN",
-    speaker: str = "Anushka",
+    speaker: str = "anushka",
     pitch: float = 0.0,
     pace: float = 1.0,
     loudness: float = 1.5,
@@ -35,8 +35,8 @@ def text_to_speech(
     Args:
         text: The text to convert to speech
         target_language_code: Target language code (default: hi-IN)
-        speaker: Voice speaker name (default: Anushka)
-                 v2 speakers: Anushka, Manisha, Vidya, Arya, Abhilash, Karun, Hitesh
+        speaker: Voice speaker name (default: anushka)
+                 v2 speakers: anushka, manisha, vidya, arya, abhilash, karun, hitesh
         pitch: Voice pitch adjustment (default: 0.0, range: -2.0 to 2.0)
         pace: Speaking pace (default: 1.0, range: 0.5 to 2.0)
         loudness: Audio loudness (default: 1.5, range: 0.5 to 3.0)
@@ -69,7 +69,7 @@ def text_to_speech(
 def text_to_speech_v3(
     text: str,
     target_language_code: str = "hi-IN",
-    speaker: str = "Aditya",
+    speaker: str = "aditya",
     temperature: float = 1.0,
     speech_sample_rate: int = 8000,
     enable_preprocessing: bool = True,
@@ -81,8 +81,8 @@ def text_to_speech_v3(
     Args:
         text: The text to convert to speech
         target_language_code: Target language code (default: hi-IN)
-        speaker: Voice speaker name (default: Aditya)
-                 v3-beta has 31 speakers including: Aditya, Ritu, Priya, Rohan, etc.
+        speaker: Voice speaker name (default: aditya)
+                 v3-beta has 31 speakers including: aditya, ritu, priya, rohan, etc. (all lowercase)
         temperature: Controls randomness/expressiveness (default: 1.0, range: 0.0 to 2.0)
         speech_sample_rate: Audio sample rate in Hz (default: 8000)
         enable_preprocessing: Enable text preprocessing (default: True)
@@ -158,19 +158,19 @@ def main():
         {
             "text": "Welcome to Sarvam AI!",
             "language": "en-IN",
-            "speaker": "Abhilash",  # Male voice
+            "speaker": "abhilash",  # Male voice
             "output": "output_english_v2.wav"
         },
         {
             "text": "வணக்கம், சர்வம் AI-க்கு வரவேற்கிறோம்",
             "language": "ta-IN",
-            "speaker": "Manisha",  # Female voice
+            "speaker": "manisha",  # Female voice
             "output": "output_tamil_v2.wav"
         },
         {
             "text": "ಸ್ವಾಗತ ಸರ್ವಮ್ AI ಗೆ",
             "language": "kn-IN",
-            "speaker": "Vidya",  # Female voice
+            "speaker": "vidya",  # Female voice
             "output": "output_kannada_v2.wav"
         }
     ]
@@ -199,7 +199,7 @@ def main():
         result = text_to_speech(
             text=text,
             target_language_code="hi-IN",
-            speaker="Karun",
+            speaker="karun",
             pitch=0.5,      # Slightly higher pitch
             pace=1.2,       # Faster pace
             loudness=2.0,   # Louder volume
@@ -222,7 +222,7 @@ def main():
         result = text_to_speech_v3(
             text=text,
             target_language_code="hi-IN",
-            speaker="Aditya",  # Default v3-beta speaker
+            speaker="aditya",  # Default v3-beta speaker
             temperature=1.5,   # More expressive
             model="bulbul:v3-beta"
         )
@@ -233,7 +233,7 @@ def main():
         result = text_to_speech_v3(
             text=text,
             target_language_code="hi-IN",
-            speaker="Ritu",    # Another v3-beta speaker
+            speaker="ritu",    # Another v3-beta speaker
             temperature=0.3,   # More consistent
             model="bulbul:v3-beta"
         )
@@ -255,7 +255,7 @@ def main():
         result_v2 = text_to_speech(
             text=comparison_text,
             target_language_code="en-IN",
-            speaker="Arya",
+            speaker="arya",
             model="bulbul:v2"
         )
         save_audio(result_v2.audios[0], "comparison_v2.wav")
@@ -265,7 +265,7 @@ def main():
         result_v3 = text_to_speech_v3(
             text=comparison_text,
             target_language_code="en-IN",
-            speaker="Priya",
+            speaker="priya",
             model="bulbul:v3-beta"
         )
         save_audio(result_v3.audios[0], "comparison_v3_beta.wav")

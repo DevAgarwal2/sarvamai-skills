@@ -97,7 +97,7 @@ client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
 # File: examples/speech_to_text.py
 with open("audio.wav", "rb") as f:
     response = client.speech_to_text.transcribe(
-        file=f, model="saarika:v2.5", language_code="hi-IN"
+        file=f, language_code="hi-IN"
     )
 print(response.transcript)
 ```
@@ -106,17 +106,17 @@ print(response.transcript)
 ```python
 # File: examples/speech_to_text_translate.py
 with open("audio.wav", "rb") as f:
-    response = client.speech_to_text.translate(file=f, model="saaras:v2.5")
+    response = client.speech_to_text.translate(file=f, )
 print(response.translation)  # English output
 ```
 
 ### Text to Speech
 ```python
 # File: examples/text_to_speech.py
-# bulbul:v2 (default) - 7 speakers: Anushka, Manisha, Vidya, Arya, Abhilash, Karun, Hitesh
+# bulbul:v2 (default) - 7 speakers: anushka, manisha, vidya, arya, abhilash, karun, hitesh
 response = client.text_to_speech.convert(
     text="नमस्ते", target_language_code="hi-IN", 
-    model="bulbul:v2", speaker="anushka"
+    speaker="anushka"
 )
 # Decode: base64.b64decode(response.audios[0])
 ```
