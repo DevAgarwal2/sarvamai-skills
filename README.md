@@ -10,6 +10,7 @@ Sarvam AI provides state-of-the-art AI models for Indian languages, including:
 - **Translation**: Translate between Indian languages and English
 - **Chat Completion**: Conversational AI and text generation
 - **Document Intelligence**: Extract text from PDFs and images in 23 languages
+- **Vision**: Image captioning, OCR, and content extraction in 23 languages
 
 This repository helps you quickly build applications using these capabilities.
 
@@ -181,23 +182,66 @@ job_data = response.json()
 
 [View Template](./templates/document-intelligence-template.md) | [View Example](./examples/document_intelligence.py)
 
+### 7. Vision API
+Analyze images with captioning, OCR, and content extraction in 23 languages.
+
+```python
+from sarvamai import SarvamAI
+
+client = SarvamAI(api_subscription_key=api_key)
+
+# Option 1: Generate caption in Hindi
+with open("image.jpg", "rb") as img:
+    response = client.vision.analyze(
+        file=img,
+        prompt_type="caption_in",
+        language="hi-IN"
+    )
+print(response.content)  # "एक सुंदर पहाड़ी दृश्य"
+
+# Option 2: Extract text (OCR)
+with open("document.jpg", "rb") as img:
+    response = client.vision.analyze(
+        file=img,
+        prompt_type="default_ocr"
+    )
+print(response.content)  # Extracted text
+
+# Option 3: Convert to markdown
+with open("slide.jpg", "rb") as img:
+    response = client.vision.analyze(
+        file=img,
+        prompt_type="extract_as_markdown"
+    )
+print(response.content)  # Markdown formatted content
+```
+
+**Prompt Types:**
+- `caption_in`: Image captioning in 23 languages
+- `default_ocr`: Text extraction from images
+- `extract_as_markdown`: Convert image to markdown format
+
+**Use Cases:** E-commerce descriptions, accessibility alt-text, document OCR, presentation conversion
+
+[View Template](./templates/vision-template.md) | [View Example](./examples/vision.py)
+
 ## Supported Languages
 
-| Language | Code | Speech-to-Text | Text-to-Speech | Translation | Document Intelligence |
-|----------|------|----------------|----------------|-------------|----------------------|
-| Hindi | hi-IN | ✓ | ✓ | ✓ | ✓ |
-| English (Indian) | en-IN | ✓ | ✓ | ✓ | ✓ |
-| Bengali | bn-IN | ✓ | ✓ | ✓ | ✓ |
-| Gujarati | gu-IN | ✓ | ✓ | ✓ | ✓ |
-| Kannada | kn-IN | ✓ | ✓ | ✓ | ✓ |
-| Malayalam | ml-IN | ✓ | ✓ | ✓ | ✓ |
-| Marathi | mr-IN | ✓ | ✓ | ✓ | ✓ |
-| Odia | or-IN | ✓ | ✓ | ✓ | ✓ |
-| Punjabi | pa-IN | ✓ | ✓ | ✓ | ✓ |
-| Tamil | ta-IN | ✓ | ✓ | ✓ | ✓ |
-| Telugu | te-IN | ✓ | ✓ | ✓ | ✓ |
+| Language | Code | Speech-to-Text | Text-to-Speech | Translation | Document Intelligence | Vision |
+|----------|------|----------------|----------------|-------------|----------------------|--------|
+| Hindi | hi-IN | ✓ | ✓ | ✓ | ✓ | ✓ |
+| English (Indian) | en-IN | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Bengali | bn-IN | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Gujarati | gu-IN | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Kannada | kn-IN | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Malayalam | ml-IN | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Marathi | mr-IN | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Odia | or-IN | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Punjabi | pa-IN | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Tamil | ta-IN | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Telugu | te-IN | ✓ | ✓ | ✓ | ✓ | ✓ |
 
-**Document Intelligence supports all 22 Indian languages + English (23 total)**
+**Document Intelligence and Vision support all 22 Indian languages + English (23 total)**
 
 ## Examples
 

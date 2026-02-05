@@ -177,13 +177,48 @@ job.download_output("./output.zip")
 print("Output saved to ./output.zip")
 ```
 
+### Vision
+```python
+# File: examples/vision.py
+# Image analysis: captioning, OCR, markdown extraction
+# Supports 23 languages (22 Indian + English)
+from sarvamai import SarvamAI
+
+client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
+
+# Option 1: Generate caption in Hindi
+with open("image.jpg", "rb") as img:
+    response = client.vision.analyze(
+        file=img,
+        prompt_type="caption_in",
+        language="hi-IN"
+    )
+print(response.content)  # "एक सुंदर पहाड़ी दृश्य"
+
+# Option 2: Extract text (OCR)
+with open("document.jpg", "rb") as img:
+    response = client.vision.analyze(
+        file=img,
+        prompt_type="default_ocr"
+    )
+print(response.content)
+
+# Option 3: Convert to markdown
+with open("slide.jpg", "rb") as img:
+    response = client.vision.analyze(
+        file=img,
+        prompt_type="extract_as_markdown"
+    )
+print(response.content)
+```
+
 ## Supported Languages
 
 **Core 11 languages** (all models): hi-IN, en-IN, bn-IN, gu-IN, kn-IN, ml-IN, mr-IN, od-IN, pa-IN, ta-IN, te-IN
 
 **Extended 22 languages** (sarvam-translate:v1): + as-IN, brx-IN, doi-IN, kok-IN, ks-IN, mai-IN, mni-IN, ne-IN, sa-IN, sat-IN, sd-IN, ur-IN
 
-**Document Intelligence 23 languages** (sarvam-vision): All 22 Indian languages + en-IN
+**Document Intelligence & Vision 23 languages** (sarvam-vision): All 22 Indian languages + en-IN
 
 ## Repository Structure
 
