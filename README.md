@@ -186,34 +186,40 @@ job_data = response.json()
 Analyze images with captioning, OCR, and content extraction in 23 languages.
 
 ```python
-from sarvamai import SarvamAI
-
-client = SarvamAI(api_subscription_key=api_key)
+import requests
 
 # Option 1: Generate caption in Hindi
-with open("image.jpg", "rb") as img:
-    response = client.vision.analyze(
-        file=img,
-        prompt_type="caption_in",
-        language="hi-IN"
-    )
-print(response.content)  # "एक सुंदर पहाड़ी दृश्य"
+files = {"file": ("image.jpg", open("image.jpg", "rb"), "image/jpeg")}
+data = {"prompt_type": "caption_in", "language": "hi-IN"}
+response = requests.post(
+    "https://api.sarvam.ai/vision",
+    headers={"API-Subscription-Key": api_key},
+    files=files,
+    data=data
+)
+print(response.json()['content'])  # "एक सुंदर पहाड़ी दृश्य"
 
 # Option 2: Extract text (OCR)
-with open("document.jpg", "rb") as img:
-    response = client.vision.analyze(
-        file=img,
-        prompt_type="default_ocr"
-    )
-print(response.content)  # Extracted text
+files = {"file": ("document.jpg", open("document.jpg", "rb"), "image/jpeg")}
+data = {"prompt_type": "default_ocr"}
+response = requests.post(
+    "https://api.sarvam.ai/vision",
+    headers={"API-Subscription-Key": api_key},
+    files=files,
+    data=data
+)
+print(response.json()['content'])  # Extracted text
 
 # Option 3: Convert to markdown
-with open("slide.jpg", "rb") as img:
-    response = client.vision.analyze(
-        file=img,
-        prompt_type="extract_as_markdown"
-    )
-print(response.content)  # Markdown formatted content
+files = {"file": ("slide.jpg", open("slide.jpg", "rb"), "image/jpeg")}
+data = {"prompt_type": "extract_as_markdown"}
+response = requests.post(
+    "https://api.sarvam.ai/vision",
+    headers={"API-Subscription-Key": api_key},
+    files=files,
+    data=data
+)
+print(response.json()['content'])  # Markdown formatted content
 ```
 
 **Prompt Types:**

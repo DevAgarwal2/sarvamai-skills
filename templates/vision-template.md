@@ -6,8 +6,8 @@ This template helps you create skills that use Sarvam AI's Vision API for image 
 ## API Information
 
 **Model:** sarvam-vision (3B parameter Vision Language Model)  
-**SDK:** `sarvamai` Python library  
-**Client:** `client.vision`
+**API Endpoint:** `https://api.sarvam.ai/vision`  
+**SDK:** Currently accessible via REST API (SDK support coming soon)
 
 ## Capabilities
 
@@ -53,64 +53,90 @@ All 22 official Indian languages plus English:
 | Kannada | kn-IN | Punjabi | pa-IN | English | en-IN |
 | Malayalam | ml-IN | Odia | od-IN | | |
 
-## Python SDK Examples
+## Python REST API Examples
+
+**Note:** Vision API is currently accessed via REST API. SDK support coming soon.
 
 ### Example 1: Image Captioning (Hindi)
 
 ```python
 import os
-from sarvamai import SarvamAI
+import requests
 
-client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
+VISION_API_URL = "https://api.sarvam.ai/vision"
 
-# Generate caption in Hindi
-with open("product_image.jpg", "rb") as image_file:
-    response = client.vision.analyze(
-        file=image_file,
-        prompt_type="caption_in",
-        language="hi-IN"
-    )
+headers = {
+    "API-Subscription-Key": os.getenv("SARVAM_API_KEY")
+}
 
-print(response.content)  # "एक सुंदर लाल रंग की कार"
-print(f"Request ID: {response.request_id}")
+files = {
+    "file": ("product_image.jpg", open("product_image.jpg", "rb"), "image/jpeg")
+}
+
+data = {
+    "prompt_type": "caption_in",
+    "language": "hi-IN"
+}
+
+response = requests.post(VISION_API_URL, headers=headers, files=files, data=data)
+result = response.json()
+
+print(result['content'])  # "एक सुंदर लाल रंग की कार"
+print(f"Request ID: {result['request_id']}")
 ```
 
 ### Example 2: OCR - Text Extraction
 
 ```python
 import os
-from sarvamai import SarvamAI
+import requests
 
-client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
+VISION_API_URL = "https://api.sarvam.ai/vision"
 
-# Extract text from document image
-with open("document.jpg", "rb") as image_file:
-    response = client.vision.analyze(
-        file=image_file,
-        prompt_type="default_ocr"
-    )
+headers = {
+    "API-Subscription-Key": os.getenv("SARVAM_API_KEY")
+}
 
-print(response.content)
-print(f"Request ID: {response.request_id}")
+files = {
+    "file": ("document.jpg", open("document.jpg", "rb"), "image/jpeg")
+}
+
+data = {
+    "prompt_type": "default_ocr"
+}
+
+response = requests.post(VISION_API_URL, headers=headers, files=files, data=data)
+result = response.json()
+
+print(result['content'])
+print(f"Request ID: {result['request_id']}")
 ```
 
 ### Example 3: Extract as Markdown
 
 ```python
 import os
-from sarvamai import SarvamAI
+import requests
 
-client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
+VISION_API_URL = "https://api.sarvam.ai/vision"
 
-# Convert image to markdown
-with open("presentation_slide.jpg", "rb") as image_file:
-    response = client.vision.analyze(
-        file=image_file,
-        prompt_type="extract_as_markdown"
-    )
+headers = {
+    "API-Subscription-Key": os.getenv("SARVAM_API_KEY")
+}
 
-print(response.content)
-print(f"Request ID: {response.request_id}")
+files = {
+    "file": ("presentation_slide.jpg", open("presentation_slide.jpg", "rb"), "image/jpeg")
+}
+
+data = {
+    "prompt_type": "extract_as_markdown"
+}
+
+response = requests.post(VISION_API_URL, headers=headers, files=files, data=data)
+result = response.json()
+
+print(result['content'])
+print(f"Request ID: {result['request_id']}")
 ```
 
 ## Prompt Types Reference

@@ -182,34 +182,40 @@ print("Output saved to ./output.zip")
 # File: examples/vision.py
 # Image analysis: captioning, OCR, markdown extraction
 # Supports 23 languages (22 Indian + English)
-from sarvamai import SarvamAI
-
-client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
+import requests
 
 # Option 1: Generate caption in Hindi
-with open("image.jpg", "rb") as img:
-    response = client.vision.analyze(
-        file=img,
-        prompt_type="caption_in",
-        language="hi-IN"
-    )
-print(response.content)  # "एक सुंदर पहाड़ी दृश्य"
+files = {"file": ("image.jpg", open("image.jpg", "rb"), "image/jpeg")}
+data = {"prompt_type": "caption_in", "language": "hi-IN"}
+response = requests.post(
+    "https://api.sarvam.ai/vision",
+    headers={"API-Subscription-Key": os.getenv("SARVAM_API_KEY")},
+    files=files,
+    data=data
+)
+print(response.json()['content'])  # "एक सुंदर पहाड़ी दृश्य"
 
 # Option 2: Extract text (OCR)
-with open("document.jpg", "rb") as img:
-    response = client.vision.analyze(
-        file=img,
-        prompt_type="default_ocr"
-    )
-print(response.content)
+files = {"file": ("document.jpg", open("document.jpg", "rb"), "image/jpeg")}
+data = {"prompt_type": "default_ocr"}
+response = requests.post(
+    "https://api.sarvam.ai/vision",
+    headers={"API-Subscription-Key": os.getenv("SARVAM_API_KEY")},
+    files=files,
+    data=data
+)
+print(response.json()['content'])
 
 # Option 3: Convert to markdown
-with open("slide.jpg", "rb") as img:
-    response = client.vision.analyze(
-        file=img,
-        prompt_type="extract_as_markdown"
-    )
-print(response.content)
+files = {"file": ("slide.jpg", open("slide.jpg", "rb"), "image/jpeg")}
+data = {"prompt_type": "extract_as_markdown"}
+response = requests.post(
+    "https://api.sarvam.ai/vision",
+    headers={"API-Subscription-Key": os.getenv("SARVAM_API_KEY")},
+    files=files,
+    data=data
+)
+print(response.json()['content'])
 ```
 
 ## Supported Languages

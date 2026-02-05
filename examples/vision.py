@@ -12,14 +12,19 @@ Supported Prompt Types:
 - extract_as_markdown: Convert image content to markdown format
 
 Supported Languages (for caption_in): 23 languages (22 Indian + English)
+
+NOTE: Vision API is currently accessed via REST API. SDK support coming soon.
 """
 
 import os
-from sarvamai import SarvamAI
+import requests
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+# API Configuration
+VISION_API_URL = "https://api.sarvam.ai/vision"
 
 
 def analyze_image_caption(file_path: str, language: str = "hi-IN"):
@@ -37,30 +42,35 @@ def analyze_image_caption(file_path: str, language: str = "hi-IN"):
     Returns:
         dict: Caption content and request ID
     """
-    client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
-    
     print(f"\n{'='*60}")
     print(f"Generating Caption in {language}")
     print(f"{'='*60}")
     print(f"Image: {file_path}")
     print(f"Prompt Type: caption_in")
     
-    with open(file_path, "rb") as image_file:
-        response = client.vision.analyze(
-            file=image_file,
-            prompt_type="caption_in",
-            language=language
-        )
+    headers = {
+        "API-Subscription-Key": os.getenv("SARVAM_API_KEY")
+    }
     
-    print(f"\nCaption ({language}):")
-    print(f"  {response.content}")
-    print(f"\nRequest ID: {response.request_id}")
+    files = {
+        "file": (os.path.basename(file_path), open(file_path, "rb"), "image/jpeg")
+    }
     
-    return {
-        "content": response.content,
-        "request_id": response.request_id,
+    data = {
+        "prompt_type": "caption_in",
         "language": language
     }
+    
+    response = requests.post(VISION_API_URL, headers=headers, files=files, data=data)
+    response.raise_for_status()
+    
+    result = response.json()
+    
+    print(f"\nCaption ({language}):")
+    print(f"  {result['content']}")
+    print(f"\nRequest ID: {result['request_id']}")
+    
+    return result
 
 
 def analyze_image_ocr(file_path: str):
@@ -73,28 +83,34 @@ def analyze_image_ocr(file_path: str):
     Returns:
         dict: Extracted text and request ID
     """
-    client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
-    
     print(f"\n{'='*60}")
     print(f"Extracting Text (OCR)")
     print(f"{'='*60}")
     print(f"Image: {file_path}")
     print(f"Prompt Type: default_ocr")
     
-    with open(file_path, "rb") as image_file:
-        response = client.vision.analyze(
-            file=image_file,
-            prompt_type="default_ocr"
-        )
+    headers = {
+        "API-Subscription-Key": os.getenv("SARVAM_API_KEY")
+    }
+    
+    files = {
+        "file": (os.path.basename(file_path), open(file_path, "rb"), "image/jpeg")
+    }
+    
+    data = {
+        "prompt_type": "default_ocr"
+    }
+    
+    response = requests.post(VISION_API_URL, headers=headers, files=files, data=data)
+    response.raise_for_status()
+    
+    result = response.json()
     
     print(f"\nExtracted Text:")
-    print(f"  {response.content}")
-    print(f"\nRequest ID: {response.request_id}")
+    print(f"  {result['content']}")
+    print(f"\nRequest ID: {result['request_id']}")
     
-    return {
-        "content": response.content,
-        "request_id": response.request_id
-    }
+    return result
 
 
 def analyze_image_markdown(file_path: str):
@@ -107,28 +123,34 @@ def analyze_image_markdown(file_path: str):
     Returns:
         dict: Markdown content and request ID
     """
-    client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
-    
     print(f"\n{'='*60}")
     print(f"Extracting as Markdown")
     print(f"{'='*60}")
     print(f"Image: {file_path}")
     print(f"Prompt Type: extract_as_markdown")
     
-    with open(file_path, "rb") as image_file:
-        response = client.vision.analyze(
-            file=image_file,
-            prompt_type="extract_as_markdown"
-        )
+    headers = {
+        "API-Subscription-Key": os.getenv("SARVAM_API_KEY")
+    }
+    
+    files = {
+        "file": (os.path.basename(file_path), open(file_path, "rb"), "image/jpeg")
+    }
+    
+    data = {
+        "prompt_type": "extract_as_markdown"
+    }
+    
+    response = requests.post(VISION_API_URL, headers=headers, files=files, data=data)
+    response.raise_for_status()
+    
+    result = response.json()
     
     print(f"\nMarkdown Content:")
-    print(f"  {response.content}")
-    print(f"\nRequest ID: {response.request_id}")
+    print(f"  {result['content']}")
+    print(f"\nRequest ID: {result['request_id']}")
     
-    return {
-        "content": response.content,
-        "request_id": response.request_id
-    }
+    return result
 
 
 def main():
@@ -219,14 +241,15 @@ def main():
     print("\n" + "="*60)
     print("Example 6: API Response Structure")
     print("="*60)
-    print("\nThe analyze() method returns an object with:")
+    print("\nThe API returns JSON with:")
     print("  • content: The generated caption/extracted text")
     print("  • request_id: Unique identifier for the request")
+    print("  • prompt: The prompt used by the API")
     print("\nExample response:")
     print("  {")
     print("    'content': 'एक सुंदर पहाड़ी दृश्य',")
-    print("    'request_id': 'req_123456789',")
-    print("    'language': 'hi-IN'")
+    print("    'request_id': 'vision_123456789',")
+    print("    'prompt': 'Describe this image in Hindi.'")
     print("  }")
 
 
