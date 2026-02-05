@@ -4,8 +4,7 @@ Sarvam AI - Chat Completion
 This example demonstrates how to use Sarvam AI's chat completion API
 for conversational AI and text generation tasks.
 
-Model available:
-- sarvam-m: 24B parameter production-ready chat model
+Uses the default sarvam-m model (24B parameter production-ready chat model)
 """
 
 import os
@@ -13,7 +12,6 @@ from sarvamai import SarvamAI
 
 def chat_completion(
     messages: list,
-    model: str = "sarvam-m",
     temperature: float = 0.7,
     max_tokens: int = 1024,
     top_p: float = 0.9,
@@ -26,7 +24,6 @@ def chat_completion(
     
     Args:
         messages: List of message dictionaries with 'role' and 'content'
-        model: Model name (only sarvam-m available)
         temperature: Sampling temperature (0.0 to 2.0)
         max_tokens: Maximum tokens to generate
         top_p: Nucleus sampling parameter
@@ -45,7 +42,6 @@ def chat_completion(
     # Generate chat completion
     response = client.chat.completions(
         messages=messages,
-        model=model,
         temperature=temperature,
         max_tokens=max_tokens,
         top_p=top_p,
@@ -70,7 +66,7 @@ def main():
     ]
     
     try:
-        response = chat_completion(messages, model="sarvam-m")
+        response = chat_completion(messages)
         print(f"User: {messages[0]['content']}")
         print(f"Assistant: {response.choices[0].message.content}")
         print(f"\nTokens used: {response.usage.total_tokens}")
@@ -90,7 +86,7 @@ def main():
     ]
     
     try:
-        response = chat_completion(conversation, model="sarvam-m")
+        response = chat_completion(conversation)
         print("Conversation history:")
         for msg in conversation[:-1]:
             print(f"{msg['role'].capitalize()}: {msg['content']}\n")
@@ -115,7 +111,6 @@ def main():
     try:
         response = chat_completion(
             messages,
-            model="sarvam-m",
             temperature=0.9,  # Higher temperature for creativity
             max_tokens=256
         )
@@ -140,7 +135,6 @@ def main():
     try:
         response = chat_completion(
             messages,
-            model="sarvam-m",
             temperature=0.2,  # Lower temperature for factual responses
             max_tokens=512
         )
@@ -169,7 +163,6 @@ def main():
     try:
         response = chat_completion(
             messages,
-            model="sarvam-m",
             temperature=0.5
         )
         print(f"System: {messages[0]['content']}\n")

@@ -135,7 +135,7 @@ print(response.translated_text)
 # File: examples/chat_completion.py
 response = client.chat.completions(
     messages=[{"role": "user", "content": "What is AI?"}],
-    model="sarvam-m", temperature=0.7
+    temperature=0.7
 )
 print(response.choices[0].message.content)
 ```
