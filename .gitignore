@@ -53,3 +53,11 @@ temp/
 # Local test files
 test_*.py
 hindi_output/
+
+# Image files (test assets)
+*.jpeg
+*.jpg
+*.png
+*.gif
+*.bmp
+*.webp
