@@ -20,7 +20,8 @@ This template helps you create skills that use Sarvam AI's Document Intelligence
 
 - **Markdown (md)**: Clean text with preserved structure (default)
 - **HTML**: Structured output with tables and formatting
-- **JSON**: Structured data for programmatic processing
+
+**Note:** JSON format is NOT supported by the API. Only "html" and "md" are valid output formats.
 
 The output is always delivered as a ZIP file containing the extracted content.
 
@@ -94,7 +95,7 @@ When you call `create_job()`, it returns a `DocumentIntelligenceJob` object with
 ### Properties
 - `job_id` - Unique job identifier
 - `language` - Document language code
-- `output_format` - Output format (html/md/json)
+- `output_format` - Output format (html or md only)
 
 ### Methods
 - `upload_file(file_path)` - Upload PDF or ZIP file
@@ -134,14 +135,6 @@ extracted_output/
     └── page_001.json
 ```
 
-For JSON output:
-```
-extracted_output/
-├── document.json        # Structured JSON data
-└── metadata/
-    └── page_001.json
-```
-
 ## Use Cases
 
 ### 1. Financial Reports
@@ -156,8 +149,8 @@ extracted_output/
 
 ### 3. Invoice Processing
 **Challenge:** Extracting structured data from invoices  
-**Solution:** JSON output for programmatic processing  
-**Recommended Format:** JSON
+**Solution:** HTML output preserves table structure for programmatic parsing  
+**Recommended Format:** HTML
 
 ### 4. Historical Archives
 **Challenge:** Native Indic script support  
@@ -169,8 +162,7 @@ extracted_output/
 | Format | Best For | Pros | Cons |
 |--------|----------|------|------|
 | **Markdown** | Text documents, articles | Clean, readable, easy to process | Basic table support |
-| **HTML** | Complex tables, forms | Rich formatting, preserves layout | More verbose |
-| **JSON** | Data extraction, automation | Structured, programmatic access | Requires parsing |
+| **HTML** | Complex tables, forms, data extraction | Rich formatting, preserves layout, structured tables | More verbose |
 
 ## Best Practices
 
@@ -187,8 +179,8 @@ extracted_output/
 
 3. **Format Selection:**
    - Use Markdown for simple text documents
-   - Use HTML for documents with complex tables
-   - Use JSON for data extraction workflows
+   - Use HTML for documents with complex tables or data extraction needs
+   - JSON format is NOT supported by the API
 
 4. **Language Selection:**
    - Always specify correct language for better OCR accuracy

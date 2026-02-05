@@ -144,7 +144,7 @@ print(response.choices[0].message.content)
 ```python
 # File: examples/document_intelligence.py
 # Process documents in 23 languages (22 Indian + English)
-# Supports PDF, ZIP; outputs HTML, Markdown, or JSON (as ZIP)
+# Supports PDF, ZIP; outputs HTML or Markdown only (as ZIP)
 from sarvamai import SarvamAI
 
 client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
