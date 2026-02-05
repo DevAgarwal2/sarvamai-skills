@@ -5,7 +5,6 @@ This example demonstrates how to use Sarvam AI's Document Intelligence API
 to extract text from PDFs and images in 23 languages (22 Indian + English).
 
 Model: sarvam-vision (3B parameter Vision Language Model)
-API Base URL: https://api.sarvam.ai/doc-digitization/job/v1
 
 Supported Input Formats: PDF, ZIP (containing JPG/PNG images)
 Output Formats (delivered as ZIP): html, md, json
@@ -15,31 +14,16 @@ Supported languages (23): hi-IN, en-IN, bn-IN, gu-IN, kn-IN, ml-IN, mr-IN, od-IN
 """
 
 import os
-import time
-import zipfile
-import requests
-from pathlib import Path
+from sarvamai import SarvamAI
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
-# Configuration
-API_KEY = os.getenv("SARVAM_API_KEY")
-BASE_URL = "https://api.sarvam.ai/doc-digitization/job/v1"
-
 
 def process_document(file_path: str, language: str = "en-IN", output_format: str = "md"):
     """
     Process a document using Sarvam AI Document Intelligence API.
-    
-    Workflow:
-    1. Create job
-    2. Get upload URL
-    3. Upload file
-    4. Start processing
-    5. Poll for completion
-    6. Download and extract results
     
     Args:
         file_path: Path to PDF or ZIP file
@@ -47,118 +31,49 @@ def process_document(file_path: str, language: str = "en-IN", output_format: str
         output_format: Output format - "html", "md", or "json" (default: md)
     
     Returns:
-        dict: Processing results including extracted files
+        dict: Processing results including output file path
     """
-    if not API_KEY:
-        raise ValueError("SARVAM_API_KEY not found in environment")
+    # Initialize client
+    client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
     
-    file_path = Path(file_path)
-    if not file_path.exists():
-        raise FileNotFoundError(f"File not found: {file_path}")
-    
-    headers = {
-        "api-subscription-key": API_KEY,
-        "Content-Type": "application/json"
-    }
-    
-    filename = file_path.name
-    
-    # Step 1: Create job
-    print(f"Creating job for {filename}...")
-    create_response = requests.post(
-        BASE_URL,
-        headers=headers,
-        json={
-            "job_parameters": {
-                "language": language,
-                "output_format": output_format
-            }
-        }
+    # Step 1: Create a document intelligence job
+    print(f"Creating job for {file_path}...")
+    job = client.document_intelligence.create_job(
+        language=language,
+        output_format=output_format
     )
-    create_response.raise_for_status()
-    job_data = create_response.json()
-    job_id = job_data["job_id"]
-    print(f"  ✓ Job created: {job_id}")
+    print(f"  ✓ Job created: {job.job_id}")
     
-    # Step 2: Get upload URL
-    print(f"Getting upload URL...")
-    upload_response = requests.post(
-        f"{BASE_URL}/upload-files",
-        headers=headers,
-        json={"job_id": job_id, "files": [filename]}
-    )
-    upload_response.raise_for_status()
-    upload_data = upload_response.json()
-    upload_url = upload_data["upload_urls"][filename]["file_url"]
-    print(f"  ✓ Upload URL received")
+    # Step 2: Upload document
+    print("Uploading document...")
+    job.upload_file(file_path)
+    print("  ✓ File uploaded")
     
-    # Step 3: Upload file
-    print(f"Uploading file...")
-    with open(file_path, "rb") as f:
-        requests.put(
-            upload_url, 
-            data=f, 
-            headers={"x-ms-blob-type": "BlockBlob", "Content-Type": "application/zip"}
-        )
-    print(f"  ✓ File uploaded")
+    # Step 3: Start processing
+    print("Starting processing...")
+    job.start()
+    print("  ✓ Job started")
     
-    # Step 4: Start processing
-    print(f"Starting processing...")
-    requests.post(f"{BASE_URL}/{job_id}/start", headers=headers)
-    print(f"  ✓ Processing started")
+    # Step 4: Wait for completion
+    print("Waiting for completion...")
+    status = job.wait_until_complete()
+    print(f"  ✓ Job completed with state: {status.job_state}")
     
-    # Step 5: Poll for completion
-    print(f"Waiting for completion...")
-    max_attempts = 60
-    for attempt in range(max_attempts):
-        status_response = requests.get(f"{BASE_URL}/{job_id}/status", headers=headers)
-        status_response.raise_for_status()
-        status_data = status_response.json()
-        job_state = status_data.get("job_state")
-        
-        job_details = status_data.get("job_details", [{}])[0]
-        pages = f"{job_details.get('pages_succeeded', 0)}/{job_details.get('total_pages', 0)}"
-        print(f"  Attempt {attempt + 1}: {job_state} | Pages: {pages}")
-        
-        if job_state in ["Completed", "PartiallyCompleted"]:
-            break
-        elif job_state == "Failed":
-            raise Exception(f"Job failed: {status_data.get('error_message')}")
-        
-        time.sleep(2)
+    # Step 5: Get processing metrics
+    metrics = job.get_page_metrics()
+    print(f"  ✓ Pages processed: {metrics}")
     
-    # Step 6: Download output
-    print(f"Downloading output...")
-    download_response = requests.post(f"{BASE_URL}/{job_id}/download-files", headers=headers)
-    download_response.raise_for_status()
-    download_data = download_response.json()
-    
-    output_files = []
-    for fname, fdata in download_data.get("download_urls", {}).items():
-        download_url = fdata["file_url"]
-        file_response = requests.get(download_url)
-        output_path = f"{file_path.stem}_output_{fname}"
-        with open(output_path, "wb") as f:
-            f.write(file_response.content)
-        output_files.append(output_path)
-        print(f"  ✓ Downloaded: {output_path}")
-    
-    # Step 7: Extract ZIP files
-    extracted_dirs = []
-    for output_file in output_files:
-        if output_file.endswith('.zip'):
-            extract_dir = output_file.replace('.zip', '_extracted')
-            os.makedirs(extract_dir, exist_ok=True)
-            with zipfile.ZipFile(output_file, 'r') as zip_ref:
-                zip_ref.extractall(extract_dir)
-            extracted_dirs.append(extract_dir)
-            print(f"  ✓ Extracted to: {extract_dir}/")
+    # Step 6: Download output (ZIP file containing the processed document)
+    output_file = f"{os.path.splitext(file_path)[0]}_output.zip"
+    print(f"Downloading output to {output_file}...")
+    job.download_output(output_file)
+    print(f"  ✓ Output saved to {output_file}")
     
     return {
-        "job_id": job_id,
-        "output_files": output_files,
-        "extracted_dirs": extracted_dirs,
-        "status": "completed"
+        "job_id": job.job_id,
+        "output_file": output_file,
+        "status": status.job_state,
+        "metrics": metrics
     }
 
 
@@ -182,9 +97,11 @@ def main():
         )
         print(f"\n✓ Processing complete!")
         print(f"  Job ID: {result['job_id']}")
-        print(f"  Extracted to: {result['extracted_dirs'][0]}")
+        print(f"  Output: {result['output_file']}")
     except FileNotFoundError:
         print("  (Skipped - file not found)")
+    except Exception as e:
+        print(f"  Error: {e}")
     
     # Example 2: Process with HTML output
     print("\n" + "=" * 60)

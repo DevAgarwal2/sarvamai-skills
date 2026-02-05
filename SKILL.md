@@ -145,34 +145,36 @@ print(response.choices[0].message.content)
 # File: examples/document_intelligence.py
 # Process documents in 23 languages (22 Indian + English)
 # Supports PDF, ZIP; outputs HTML, Markdown, or JSON (as ZIP)
-import requests
-import zipfile
+from sarvamai import SarvamAI
 
-# Step 1: Create job
-response = requests.post(
-    "https://api.sarvam.ai/doc-digitization/job/v1",
-    headers={"api-subscription-key": api_key},
-    json={"job_parameters": {"language": "hi-IN", "output_format": "md"}}
+client = SarvamAI(api_subscription_key=os.getenv("SARVAM_API_KEY"))
+
+# Step 1: Create a document intelligence job
+job = client.document_intelligence.create_job(
+    language="hi-IN",
+    output_format="md"
 )
-job_id = response.json()["job_id"]
+print(f"Job created: {job.job_id}")
 
-# Step 2: Get upload URL
-upload_resp = requests.post(
-    f"https://api.sarvam.ai/doc-digitization/job/v1/upload-files",
-    headers={"api-subscription-key": api_key},
-    json={"job_id": job_id, "files": ["document.pdf"]}
-)
-upload_url = upload_resp.json()["upload_urls"]["document.pdf"]["file_url"]
+# Step 2: Upload document
+job.upload_file("document.pdf")
+print("File uploaded")
 
-# Step 3: Upload file
-with open("document.pdf", "rb") as f:
-    requests.put(upload_url, data=f, headers={"x-ms-blob-type": "BlockBlob"})
+# Step 3: Start processing
+job.start()
+print("Job started")
 
-# Step 4: Start processing
-requests.post(f"https://api.sarvam.ai/doc-digitization/job/v1/{job_id}/start",
-              headers={"api-subscription-key": api_key})
+# Step 4: Wait for completion
+status = job.wait_until_complete()
+print(f"Job completed with state: {status.job_state}")
 
-# Step 5: Poll for completion and download (see full example)
+# Step 5: Get processing metrics
+metrics = job.get_page_metrics()
+print(f"Page metrics: {metrics}")
+
+# Step 6: Download output (ZIP file containing the processed document)
+job.download_output("./output.zip")
+print("Output saved to ./output.zip")
 ```
 
 ## Supported Languages
