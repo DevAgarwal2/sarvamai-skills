@@ -10,6 +10,17 @@ This approach overcomes the 5-page limit by:
 3. Merging all outputs into a single HTML/MD file
 
 Model: sarvam-vision (3B parameter Vision Language Model)
+
+Supported Languages (23):
+  Core 11: hi-IN (Hindi/Devanagari), en-IN (English/Latin), bn-IN (Bengali), 
+           gu-IN (Gujarati), kn-IN (Kannada), ml-IN (Malayalam), mr-IN (Marathi/Devanagari),
+           od-IN (Odia), pa-IN (Punjabi/Gurmukhi), ta-IN (Tamil), te-IN (Telugu)
+  
+  Extended 12: as-IN (Assamese), ur-IN (Urdu/Perso-Arabic), sa-IN (Sanskrit/Devanagari),
+               ne-IN (Nepali/Devanagari), kok-IN (Konkani/Devanagari), mai-IN (Maithili/Devanagari),
+               sd-IN (Sindhi/Devanagari-Arabic), ks-IN (Kashmiri/Perso-Arabic),
+               doi-IN (Dogri/Devanagari), mni-IN (Manipuri/Meetei Mayek),
+               brx-IN (Bodo/Devanagari), sat-IN (Santali/Ol Chiki)
 """
 
 import os

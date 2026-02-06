@@ -49,16 +49,38 @@ The output is always delivered as a ZIP file containing the extracted content.
 
 All 22 official Indian languages plus English:
 
-| Language | Code | Language | Code | Language | Code |
-|----------|------|----------|------|----------|------|
-| Hindi | hi-IN | Assamese | as-IN | Konkani | kok-IN |
-| Bengali | bn-IN | Urdu | ur-IN | Maithili | mai-IN |
-| Tamil | ta-IN | Sanskrit | sa-IN | Sindhi | sd-IN |
-| Telugu | te-IN | Nepali | ne-IN | Kashmiri | ks-IN |
-| Marathi | mr-IN | Dogri | doi-IN | Manipuri | mni-IN |
-| Gujarati | gu-IN | Bodo | brx-IN | Santali | sat-IN |
-| Kannada | kn-IN | Punjabi | pa-IN | English | en-IN |
-| Malayalam | ml-IN | Odia | od-IN | | |
+### Core 11 Languages
+
+| Language | Code | Script |
+|----------|------|--------|
+| Hindi | hi-IN | Devanagari |
+| Bengali | bn-IN | Bengali |
+| Tamil | ta-IN | Tamil |
+| Telugu | te-IN | Telugu |
+| Marathi | mr-IN | Devanagari |
+| Gujarati | gu-IN | Gujarati |
+| Kannada | kn-IN | Kannada |
+| Malayalam | ml-IN | Malayalam |
+| Odia | od-IN | Odia |
+| Punjabi | pa-IN | Gurmukhi |
+| English | en-IN | Latin |
+
+### Extended 12 Languages
+
+| Language | Code | Script |
+|----------|------|--------|
+| Assamese | as-IN | Assamese |
+| Urdu | ur-IN | Perso-Arabic |
+| Sanskrit | sa-IN | Devanagari |
+| Nepali | ne-IN | Devanagari |
+| Konkani | kok-IN | Devanagari |
+| Maithili | mai-IN | Devanagari |
+| Sindhi | sd-IN | Devanagari/Arabic |
+| Kashmiri | ks-IN | Perso-Arabic |
+| Dogri | doi-IN | Devanagari |
+| Manipuri | mni-IN | Meetei Mayek |
+| Bodo | brx-IN | Devanagari |
+| Santali | sat-IN | Ol Chiki |
 
 ## SDK Workflow
 

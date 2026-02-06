@@ -9,8 +9,16 @@ Model: sarvam-vision (3B parameter Vision Language Model)
 Supported Input Formats: PDF, ZIP (containing JPG/PNG images)
 Output Formats (delivered as ZIP): html, md (json is NOT supported)
 
-Supported languages (23): hi-IN, en-IN, bn-IN, gu-IN, kn-IN, ml-IN, mr-IN, od-IN, pa-IN, ta-IN, te-IN,
-                          as-IN, ur-IN, sa-IN, ne-IN, doi-IN, brx-IN, kok-IN, mai-IN, sd-IN, ks-IN, mni-IN, sat-IN
+Supported Languages (23):
+  Core 11: hi-IN (Hindi/Devanagari), en-IN (English/Latin), bn-IN (Bengali), 
+           gu-IN (Gujarati), kn-IN (Kannada), ml-IN (Malayalam), mr-IN (Marathi/Devanagari),
+           od-IN (Odia), pa-IN (Punjabi/Gurmukhi), ta-IN (Tamil), te-IN (Telugu)
+  
+  Extended 12: as-IN (Assamese), ur-IN (Urdu/Perso-Arabic), sa-IN (Sanskrit/Devanagari),
+               ne-IN (Nepali/Devanagari), kok-IN (Konkani/Devanagari), mai-IN (Maithili/Devanagari),
+               sd-IN (Sindhi/Devanagari-Arabic), ks-IN (Kashmiri/Perso-Arabic),
+               doi-IN (Dogri/Devanagari), mni-IN (Manipuri/Meetei Mayek),
+               brx-IN (Bodo/Devanagari), sat-IN (Santali/Ol Chiki)
 """
 
 import os
@@ -134,17 +142,42 @@ def main():
     print("Example 4: Supported Languages (23)")
     print("=" * 60)
     
-    languages = [
-        ("en-IN", "English"), ("hi-IN", "Hindi"), ("bn-IN", "Bengali"),
-        ("ta-IN", "Tamil"), ("te-IN", "Telugu"), ("mr-IN", "Marathi"),
-        ("gu-IN", "Gujarati"), ("kn-IN", "Kannada"), ("ml-IN", "Malayalam"),
-        ("pa-IN", "Punjabi"), ("od-IN", "Odia")
+    print("\nCore 11 Languages:")
+    core_languages = [
+        ("en-IN", "English", "Latin"),
+        ("hi-IN", "Hindi", "Devanagari"),
+        ("bn-IN", "Bengali", "Bengali"),
+        ("ta-IN", "Tamil", "Tamil"),
+        ("te-IN", "Telugu", "Telugu"),
+        ("mr-IN", "Marathi", "Devanagari"),
+        ("gu-IN", "Gujarati", "Gujarati"),
+        ("kn-IN", "Kannada", "Kannada"),
+        ("ml-IN", "Malayalam", "Malayalam"),
+        ("pa-IN", "Punjabi", "Gurmukhi"),
+        ("od-IN", "Odia", "Odia")
     ]
     
-    print("\nCore 11 + Extended 12 languages:")
-    for code, name in languages:
-        print(f"  • {name:<12} ({code})")
-    print("  ... and 12 more")
+    for code, name, script in core_languages:
+        print(f"  • {name:<12} ({code:<8}) - {script}")
+    
+    print("\nExtended 12 Languages:")
+    extended_languages = [
+        ("as-IN", "Assamese", "Assamese"),
+        ("ur-IN", "Urdu", "Perso-Arabic"),
+        ("sa-IN", "Sanskrit", "Devanagari"),
+        ("ne-IN", "Nepali", "Devanagari"),
+        ("kok-IN", "Konkani", "Devanagari"),
+        ("mai-IN", "Maithili", "Devanagari"),
+        ("sd-IN", "Sindhi", "Devanagari/Arabic"),
+        ("ks-IN", "Kashmiri", "Perso-Arabic"),
+        ("doi-IN", "Dogri", "Devanagari"),
+        ("mni-IN", "Manipuri", "Meetei Mayek"),
+        ("brx-IN", "Bodo", "Devanagari"),
+        ("sat-IN", "Santali", "Ol Chiki")
+    ]
+    
+    for code, name, script in extended_languages:
+        print(f"  • {name:<12} ({code:<8}) - {script}")
     
     # Example 5: Use cases
     print("\n" + "=" * 60)

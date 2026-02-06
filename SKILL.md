@@ -244,7 +244,22 @@ print(response.json()['content'])
 
 **Extended 22 languages** (sarvam-translate:v1): + as-IN, brx-IN, doi-IN, kok-IN, ks-IN, mai-IN, mni-IN, ne-IN, sa-IN, sat-IN, sd-IN, ur-IN
 
-**Document Intelligence & Vision 23 languages** (sarvam-vision): All 22 Indian languages + en-IN
+**Document Intelligence & Vision (23 languages)** - sarvam-vision model supports all 22 Indian languages + English with their native scripts:
+
+| Language | Code | Script | Language | Code | Script |
+|----------|------|--------|----------|------|--------|
+| Hindi | hi-IN | Devanagari | Assamese | as-IN | Assamese |
+| Bengali | bn-IN | Bengali | Urdu | ur-IN | Perso-Arabic |
+| Tamil | ta-IN | Tamil | Sanskrit | sa-IN | Devanagari |
+| Telugu | te-IN | Telugu | Nepali | ne-IN | Devanagari |
+| Marathi | mr-IN | Devanagari | Konkani | kok-IN | Devanagari |
+| Gujarati | gu-IN | Gujarati | Maithili | mai-IN | Devanagari |
+| Kannada | kn-IN | Kannada | Sindhi | sd-IN | Devanagari/Arabic |
+| Malayalam | ml-IN | Malayalam | Kashmiri | ks-IN | Perso-Arabic |
+| Odia | od-IN | Odia | Dogri | doi-IN | Devanagari |
+| Punjabi | pa-IN | Gurmukhi | Manipuri | mni-IN | Meetei Mayek |
+| English | en-IN | Latin | Bodo | brx-IN | Devanagari |
+| | | | Santali | sat-IN | Ol Chiki |
 
 ## Repository Structure
 
