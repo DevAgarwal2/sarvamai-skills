@@ -186,7 +186,7 @@ def merge_markdown_outputs(chunk_results: List[Dict], output_file: str):
 
 def merge_html_outputs(chunk_results: List[Dict], output_file: str):
     """
-    Merge all HTML outputs into a single file.
+    Merge all HTML outputs into a single file while preserving original styling.
     
     Args:
         chunk_results: List of processing results from each chunk
@@ -194,26 +194,52 @@ def merge_html_outputs(chunk_results: List[Dict], output_file: str):
     """
     print(f"\nMerging HTML outputs...")
     
+    # Extract CSS and content from first chunk to use as base
+    first_chunk = chunk_results[0]
+    extract_dir = first_chunk['extract_dir']
+    html_files = list(Path(extract_dir).glob("*.html"))
+    
+    if not html_files:
+        print(f"  ✗ No HTML files found")
+        return
+    
+    # Read first chunk to get CSS
+    with open(html_files[0], 'r', encoding='utf-8') as f:
+        first_content = f.read()
+    
+    # Extract the CSS from first chunk
+    css_start = first_content.find('<style>')
+    css_end = first_content.find('</style>') + 8
+    css_section = first_content[css_start:css_end] if css_start != -1 else ""
+    
+    # Start building merged HTML with original CSS
     html_parts = []
     html_parts.append("""<!DOCTYPE html>
-<html lang="en">
+<html lang="en-IN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Merged Document</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 20px auto; padding: 20px; }
-        .chunk { margin-bottom: 40px; border-bottom: 2px solid #ccc; padding-bottom: 20px; }
-        .chunk-header { background: #f0f0f0; padding: 10px; margin-bottom: 20px; font-weight: bold; }
+""")
+    
+    # Add original CSS styling
+    html_parts.append(css_section)
+    
+    # Add minimal additional styling for page breaks
+    html_parts.append("""    <style>
+        .page-break {
+            page-break-after: always;
+            margin: 40px 0;
+            border-bottom: 1px dashed #ccc;
+        }
     </style>
 </head>
 <body>
 """)
     
+    # Merge all chunks
     for i, result in enumerate(chunk_results, 1):
         extract_dir = result['extract_dir']
-        
-        # Find the HTML file in the extracted directory
         html_files = list(Path(extract_dir).glob("*.html"))
         
         if html_files:
@@ -223,17 +249,18 @@ def merge_html_outputs(chunk_results: List[Dict], output_file: str):
             with open(html_file, 'r', encoding='utf-8') as f:
                 content = f.read()
                 
-                # Extract body content (remove html/head/body tags)
-                # Simple extraction - you may want to use BeautifulSoup for more robust parsing
+                # Extract body content only (preserve all inner HTML)
                 if '<body>' in content and '</body>' in content:
                     body_start = content.find('<body>') + 6
                     body_end = content.find('</body>')
                     content = content[body_start:body_end]
                 
-                html_parts.append(f'<div class="chunk">')
-                html_parts.append(f'<div class="chunk-header">Chunk {i}</div>')
+                # Add content directly without wrapping divs
                 html_parts.append(content)
-                html_parts.append('</div>')
+                
+                # Add page break between chunks (except last one)
+                if i < len(chunk_results):
+                    html_parts.append('<div class="page-break"></div>')
         else:
             print(f"  ⚠ No HTML file found in {extract_dir}")
     
@@ -362,7 +389,7 @@ def cleanup_temporary_files(chunks_dir: str, chunk_results: List[Dict], keep_chu
 def process_large_pdf(
     input_pdf: str,
     language: str = "en-IN",
-    output_format: str = "md",
+    output_format: str = "html",  # Changed default to HTML for better table preservation
     pages_per_chunk: int = 5,
     cleanup: bool = True,
     keep_chunks: bool = False
@@ -377,7 +404,7 @@ def process_large_pdf(
     Args:
         input_pdf: Path to input PDF file
         language: Language code (default: 'en-IN')
-        output_format: Output format - 'html' or 'md' (default: 'md')
+        output_format: Output format - 'html' (recommended) or 'md' (default: 'html')
         pages_per_chunk: Number of pages per chunk (default: 5)
         cleanup: Whether to clean up temporary files (default: True)
         keep_chunks: Whether to keep chunk PDFs after processing (default: False)
@@ -475,9 +502,9 @@ def main():
     output = process_large_pdf(
         input_pdf="small_doc.pdf",     # 3 pages
         language="en-IN",
-        output_format="md"
+        output_format="html"  # HTML recommended for tables
     )
-    # Output: small_doc_output.md (processed directly)
+    # Output: small_doc_output.html (processed directly)
     """)
     
     # Example 2: Medium PDF (10-15 pages) - Batch processing
@@ -491,7 +518,7 @@ def main():
         output_file = process_large_pdf(
             input_pdf="medium_document.pdf",  # Replace with your PDF
             language="en-IN",
-            output_format="md",
+            output_format="html",  # HTML for better table/image handling
             pages_per_chunk=5,
             cleanup=True,
             keep_chunks=False
