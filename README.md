@@ -25,6 +25,9 @@ This repository helps you quickly build applications using these capabilities.
 2. **Install the SDK**
    ```bash
    pip install sarvamai
+   
+   # For batch document processing (large PDFs):
+   pip install PyPDF2
    ```
 
 3. **Set Up Environment**
@@ -66,7 +69,8 @@ sarvam-skills/
 │   ├── text_to_speech.py
 │   ├── text_translation.py
 │   ├── chat_completion.py
-│   ├── document_intelligence.py
+│   ├── document_intelligence.py        # Small PDFs (≤5 pages)
+│   ├── document_intelligence_batch.py  # Large PDFs (batch processing)
 │   ├── end_to_end_example.py
 │   └── README.md
 │
@@ -180,7 +184,11 @@ job_data = response.json()
 
 **Use Cases:** Document digitization, archival processing, invoice extraction
 
-[View Template](./templates/document-intelligence-template.md) | [View Example](./examples/document_intelligence.py)
+**Processing Modes:**
+- **Small PDFs (≤5 pages)**: Direct processing - [View Example](./examples/document_intelligence.py)
+- **Large PDFs (any size)**: Batch processing with automatic chunking - [View Example](./examples/document_intelligence_batch.py)
+
+[View Template](./templates/document-intelligence-template.md)
 
 ### 7. Vision API
 Analyze images with captioning, OCR, and content extraction in 23 languages.

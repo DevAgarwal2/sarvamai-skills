@@ -177,6 +177,26 @@ job.download_output("./output.zip")
 print("Output saved to ./output.zip")
 ```
 
+### Document Intelligence - Batch Processing (Large PDFs)
+```python
+# File: examples/document_intelligence_batch.py
+# Process large PDFs by splitting into chunks and merging results
+# Automatically handles PDFs of any size (small, medium, large)
+from document_intelligence_batch import process_large_pdf
+
+# Automatically chooses best strategy:
+# ≤5 pages: Direct processing (no splitting)
+# >5 pages: Split into 5-page chunks, process, and merge
+output = process_large_pdf(
+    input_pdf="large_document.pdf",  # 25 pages → 5 chunks
+    language="hi-IN",
+    output_format="md",  # or "html"
+    pages_per_chunk=5,
+    cleanup=True
+)
+# Output: large_document_merged.md (all chunks merged in order)
+```
+
 ### Vision
 ```python
 # File: examples/vision.py
@@ -244,7 +264,8 @@ sarvam-skills/
 │   ├── text_to_speech.py            # TTS: Text → Audio (bulbul:v2, v3-beta)
 │   ├── text_translation.py          # Translation: 11-22 languages
 │   ├── chat_completion.py           # Chat: sarvam-m model
-│   ├── document_intelligence.py     # Document: Process docs in 23 languages
+│   ├── document_intelligence.py     # Document: Process small docs (≤5 pages)
+│   ├── document_intelligence_batch.py  # Document: Batch processing for large PDFs
 │   ├── end_to_end_example.py        # Multi-API workflows
 │   └── README.md                    # Examples documentation
 │
@@ -302,7 +323,8 @@ Working Python scripts for each API endpoint:
 - `text_to_speech.py` - Speech generation
 - `text_translation.py` - Text translation
 - `chat_completion.py` - Conversational AI
-- `document_intelligence.py` - Document processing (PDFs, images)
+- `document_intelligence.py` - Document processing (small PDFs, ≤5 pages)
+- `document_intelligence_batch.py` - Batch processing for large PDFs (any size)
 - `end_to_end_example.py` - Multi-API workflows
 
 See [examples/README.md](examples/README.md) for detailed documentation.

@@ -3,6 +3,10 @@
 ## Overview
 This template helps you create skills that use Sarvam AI's Document Intelligence API to extract text from PDFs and images in 23 languages (22 Indian + English).
 
+**Two Processing Modes:**
+1. **Direct Processing** - For small PDFs (≤5 pages)
+2. **Batch Processing** - For large PDFs (any size, splits into chunks)
+
 ## API Information
 
 **Model:** sarvam-vision (3B parameter Vision Language Model)  
@@ -11,7 +15,7 @@ This template helps you create skills that use Sarvam AI's Document Intelligence
 
 ## Supported Input Formats
 
-- PDF documents
+- PDF documents (any size)
 - ZIP archives (containing JPG/PNG images)
 
 **Note:** Individual PNG/JPG files must be packaged in a ZIP archive
@@ -24,6 +28,22 @@ This template helps you create skills that use Sarvam AI's Document Intelligence
 **Note:** JSON format is NOT supported by the API. Only "html" and "md" are valid output formats.
 
 The output is always delivered as a ZIP file containing the extracted content.
+
+## Processing Strategies by PDF Size
+
+### Small PDFs (≤5 pages)
+- **Strategy**: Direct processing (no splitting)
+- **File**: `examples/document_intelligence.py`
+- **Output**: `filename_output.md` or `filename_output.html`
+
+### Large PDFs (>5 pages)
+- **Strategy**: Batch processing with automatic chunking
+- **File**: `examples/document_intelligence_batch.py`
+- **Output**: `filename_merged.md` (chunks merged in order)
+- **Examples**:
+  - 10 pages → 2 chunks (5+5)
+  - 25 pages → 5 chunks (5+5+5+5+5)
+  - 100 pages → 20 chunks (20×5 pages)
 
 ## Supported Languages (23)
 
@@ -115,6 +135,69 @@ The `wait_until_complete()` method returns a status object with `job_state`:
 - `Completed` - All pages processed successfully
 - `PartiallyCompleted` - Some pages succeeded, some failed
 - `Failed` - All pages failed or job-level error
+
+## Batch Processing for Large PDFs
+
+For PDFs with more than 5 pages, use the batch processing workflow:
+
+### Batch Processing SDK Example
+
+```python
+from document_intelligence_batch import process_large_pdf
+
+# Automatically handles PDFs of any size
+output = process_large_pdf(
+    input_pdf="large_document.pdf",  # Any size: 10, 25, 100+ pages
+    language="hi-IN",
+    output_format="md",  # or "html"
+    pages_per_chunk=5,   # Recommended chunk size
+    cleanup=True,        # Remove temporary files
+    keep_chunks=False    # Don't keep intermediate PDFs
+)
+# Output: large_document_merged.md
+```
+
+### How Batch Processing Works
+
+1. **PDF Analysis**: Checks total page count
+2. **Strategy Selection**:
+   - ≤5 pages → Direct processing (no splitting)
+   - >5 pages → Split into 5-page chunks
+3. **Chunking**: Splits PDF into smaller files (e.g., 25 pages → 5 chunks)
+4. **Processing**: Each chunk processed via Document Intelligence API
+5. **Merging**: All outputs merged in correct order (Chunk 1, 2, 3...)
+6. **Cleanup**: Removes temporary files (optional)
+
+### Batch Processing Examples
+
+**10-page PDF:**
+```python
+output = process_large_pdf("report.pdf", language="en-IN")
+# → 2 chunks (5+5 pages)
+# → Output: report_merged.md
+```
+
+**25-page PDF:**
+```python
+output = process_large_pdf("book.pdf", language="hi-IN", output_format="html")
+# → 5 chunks (5+5+5+5+5 pages)
+# → Output: book_merged.html
+```
+
+**100-page PDF:**
+```python
+output = process_large_pdf("thesis.pdf", language="ta-IN", pages_per_chunk=5)
+# → 20 chunks (20×5 pages)
+# → Output: thesis_merged.md
+```
+
+### Batch Processing Requirements
+
+```bash
+pip install PyPDF2>=3.0.0
+```
+
+See `examples/document_intelligence_batch.py` for complete implementation.
 
 ## Output Structure
 
