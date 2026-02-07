@@ -1,6 +1,6 @@
 ---
 name: sarvam-ai-skills
-description: Guide for building AI applications with Sarvam AI APIs for Indian languages. Use when working with speech-to-text transcription, text-to-speech synthesis, text translation, chat completion, or document intelligence. Covers models saarika:v2.5, saaras:v2.5/v3, bulbul:v2/v3-beta, mayura:v1, sarvam-translate:v1, sarvam-m, and sarvam-vision for 11-23 Indian languages. Trigger when user asks about Indian language AI, STT, TTS, translation, multilingual chatbots, voice assistants, or document processing.
+description: Guide for building AI applications with Sarvam AI APIs for Indian languages. Use when working with speech-to-text transcription, text-to-speech synthesis, text translation, chat completion, or document intelligence. Covers models saarika:v2.5, saaras:v2.5/v3, bulbul:v3, mayura:v1, sarvam-translate:v1, sarvam-m, and sarvam-vision for 11-23 Indian languages. Trigger when user asks about Indian language AI, STT, TTS, translation, multilingual chatbots, voice assistants, or document processing.
 license: MIT
 ---
 
@@ -14,7 +14,7 @@ Sarvam AI provides specialized models for Indian language processing:
 
 - **Speech-to-Text (saarika:v2.5, saaras:v3)** - Transcribe audio in 11 languages (saaras:v3 has 5 modes)
 - **Speech-to-Text-Translate (saaras:v2.5)** - Transcribe and auto-translate to English
-- **Text-to-Speech (bulbul:v2, bulbul:v3-beta)** - Natural speech with 7-31 voice options
+- **Text-to-Speech (bulbul:v3)** - Natural speech with 45 voice options, temperature/pace control
 - **Text Translation (mayura:v1, sarvam-translate:v1)** - Translate between 11-22 Indian languages
 - **Chat Completion (sarvam-m)** - 24B parameter multilingual model
 - **Document Intelligence (sarvam-vision)** - 3B parameter VLM for document processing in 23 languages
@@ -113,10 +113,10 @@ print(response.translation)  # English output
 ### Text to Speech
 ```python
 # File: examples/text_to_speech.py
-# bulbul:v2 (default) - 7 speakers: anushka, manisha, vidya, arya, abhilash, karun, hitesh
+# bulbul:v3 (default) - 45 speakers: aditya, shubh, ritu, priya, neha, rahul, pooja, and more
 response = client.text_to_speech.convert(
-    text="नमस्ते", target_language_code="hi-IN", 
-    speaker="anushka"
+    text="नमस्ते", target_language_code="hi-IN",
+    speaker="shubh", pace=1.0, temperature=0.6
 )
 # Decode: base64.b64decode(response.audios[0])
 ```
@@ -276,7 +276,7 @@ sarvam-skills/
 ├── examples/                        # Working code examples
 │   ├── speech_to_text.py            # STT: Transcribe audio (saarika:v2.5, saaras:v3)
 │   ├── speech_to_text_translate.py  # STT-Translate: Audio → English (saaras:v2.5)
-│   ├── text_to_speech.py            # TTS: Text → Audio (bulbul:v2, v3-beta)
+│   ├── text_to_speech.py            # TTS: Text → Audio (bulbul:v3)
 │   ├── text_translation.py          # Translation: 11-22 languages
 │   ├── chat_completion.py           # Chat: sarvam-m model
 │   ├── document_intelligence.py     # Document: Process small docs (≤5 pages)
@@ -316,7 +316,7 @@ See: `examples/end_to_end_example.py` (lines 133-180)
 ## Model Selection
 
 **Speech-to-Text:** saarika:v2.5 (standard), saaras:v3 (5 modes: transcribe, translate, verbatim, translit, codemix)  
-**Text-to-Speech:** bulbul:v2 (default, 7 speakers), bulbul:v3-beta (31 speakers, temperature control)  
+**Text-to-Speech:** bulbul:v3 (45 speakers, temperature/pace control)  
 **Translation:** mayura:v1 (11 languages), sarvam-translate:v1 (22 languages)  
 **Chat:** sarvam-m only (24B parameters)
 **Document Intelligence:** sarvam-vision (3B VLM, 23 languages, PDF/PNG/JPG input)
